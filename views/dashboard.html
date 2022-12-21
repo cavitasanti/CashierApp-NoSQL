@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dashboard Page</title>
+    <script>
+        function displayQty(listData, checkId, qtyId) {
+            var checkBox = document.getElementById(checkId);
+            var qty = document.getElementById(qtyId);
+            if (checkBox.checked == true) {
+                qty.style.display = "block";
+                checkBox.value = listData + "," + qty.value
+            } else {
+                qty.style.display = "none";
+            }
+        }
+    </script>
+    <style>
+        .avatar {
+            float: left;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+        }
+
+        .avatar:hover {
+            background-color: #000;
+            cursor: pointer;
+        }
+
+        .navbar {
+            width: 100%;
+            overflow: auto;
+        }
+
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-200">
+    
+    <nav class="bg-green-600 border-gray-200 px-4 sm:px-5 py-4 ">
+        <div class="container flex flex-wrap justify-between items-center mx-auto">
+            <a href="index.html" class="flex items-center">
+                <span class="self-center text-2xl font-bold whitespace-nowrap text-white ml-2">Cashier App</span>
+            </a>
+          <div class="hidden w-full md:block md:w-auto" id="navbar-default">
+            <ul class="flex flex-col p-4 mt-4 rounded-lg border border-gray-100 md:flex-row md:space-x-8 md:mt-0 md:text-medium md:font-medium md:border-0">
+              <li class="bg-gray-50 py-2 px-5 rounded">
+                <a href="#home" class="block py-2 pr-4 pl-3 bg-green-600 rounded md:bg-transparent text-green-600 md:p-0" aria-current="page">Home</a>
+              </li>
+              <li class="py-2">
+                <form method="get" action="/user/logout">
+                    <button type="submmit" class="block py-2 pr-4 pl-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-green-600 md:p-0 ">Logout</button>
+                </form>
+                <!-- <a href="#about" class="">Logout</a> -->
+              </li>
+             
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <section class="text-black body-font mt-8 mb-8">
+        <form method="post" action="/user/img/update-profile" enctype="multipart/form-data">
+            <div class="">
+                <img src="/user/img/profile" alt="Avatar" class="avatar ml-4 mr-4">
+                <label class="sm:text-2xl text-lg mb-4 font-medium text-green-600">Hello, {{.Cart.Name}}!</label><br>
+                <p class="text-medium">Update Profile: 
+                <input type="file" name="image" required />
+                <input type="submit" class="justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            </div>
+        </form>
+    </section>
+
+        <section class="text-black body-font">
+        <div class="container mx-auto flex md:flex-row flex-col items-center border-2 justify-center">
+            
+            <table class="table-auto ">
+                <thead>
+                  <tr>
+                    <th class="bg-white rounded px-32 py-4 sm:text-2xl text-lg mb-4 font-medium text-gray-900" height="10%">List Product</th>
+                    <th class="px-20"> </th>
+                    <th class="bg-white rounded px-32 py-4 sm:text-2xl text-lg mb-4 font-medium text-gray-900">My Cart</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    
+                  <tr>
+                    <td class="bg-white rounded">
+                        
+                        <form method="post" action="/cart/add" class=" ml-4">
+                            {{range $val := .Product}}
+                            <input type="checkbox" id="check-{{ .Id }}" name="product" onclick="displayQty('{{ .Id }},{{ .Name }},{{ .Price }}', 'check-{{ .Id }}', 'qty-{{ .Id }}')">
+                            <label class="mb-8 text-lg">{{ .Id }}. {{ .Name }}: Rp. {{ .Price }},-</label> 
+                            <input type="number" style="display:none" id="qty-{{ .Id }}" value="1" min="1" max="100" onchange="displayQty('{{ .Id }},{{ .Name }},{{ .Price }}', 'check-{{ .Id }}', 'qty-{{ .Id }}')">
+                            <br>
+                            {{else}}
+                            Empty Product
+                            {{end}}
+                            <center>
+                            <button class="mt-4 rounded-md border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" type="submmit">Add to Cart</button>
+                        </center>
+                        </form>
+                    
+                    </td>
+                    <td> &nbsp </td>
+                    <td class="bg-white rounded content-center">
+                        <ul>
+                            {{range $val := .Cart.Cart}}
+                            <li align="center">
+                            <button class="max-w mt-2 ml-4 text-black-700 border-black border-2 py-1 px-5 rounded text-sm" type="none">
+                               
+                                <p class="text-lg">{{ .Name }} : Rp. {{ .Price }},- x {{ .Quantity }}</p>
+                                <p class="text-lg">Total : {{ .Total }}</p>
+                            </button> 
+                        </li>
+                            {{else}}
+                            Empty Cart
+                            {{end}}
+                        </ul>
+                        <p align="right" class="mt-2 py-1 mr-4">Total Price Rp. {{.Cart.TotalPrice}},-</p>
+                    </td>
+                  </tr>
+                </center>
+                </tbody>
+              </table>
+        </div>
+    </section>
+
+
+</body>
+
+</html>
